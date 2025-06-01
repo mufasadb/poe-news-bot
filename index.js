@@ -29,12 +29,15 @@ class PoeNewsBot {
   }
 
   async init() {
-    await this.loadPostedArticles();
+    const isFirstRun = await this.loadPostedArticles();
     console.log('Poe News Bot initialized');
     
     if (this.config.postLatestOnStart) {
       console.log('POST_LATEST_ON_START enabled - posting latest article for testing...');
       await this.postLatestArticle();
+    } else if (isFirstRun) {
+      console.log('First run detected - posting latest article and marking older ones as seen...');
+      await this.initializeWithLatestPost();
     } else {
       await this.checkForNewPosts();
     }
@@ -53,9 +56,11 @@ class PoeNewsBot {
       const articles = JSON.parse(data);
       this.postedArticles = new Set(articles);
       console.log(`Loaded ${this.postedArticles.size} previously posted articles`);
+      return false; // Not first run
     } catch (error) {
       console.log('No previous articles found, starting fresh');
       this.postedArticles = new Set();
+      return true; // First run
     }
   }
 
@@ -115,6 +120,32 @@ class PoeNewsBot {
     } catch (error) {
       console.error('Error posting to Discord:', error);
       return false;
+    }
+  }
+
+  async initializeWithLatestPost() {
+    console.log('Fetching RSS feed for first-time setup...');
+    
+    const articles = await this.fetchRssFeed();
+    if (articles.length === 0) {
+      console.log('No articles found in RSS feed');
+      return;
+    }
+
+    const latestArticle = articles[0];
+    console.log(`Posting latest article: ${latestArticle.title}`);
+    
+    // Post the latest article
+    const success = await this.postToDiscord(latestArticle);
+    
+    if (success) {
+      // Mark ALL articles as seen to prevent spam
+      for (const article of articles) {
+        this.postedArticles.add(article.link);
+      }
+      
+      await this.savePostedArticles();
+      console.log(`✅ First run complete! Posted latest article and marked ${articles.length} articles as seen.`);
     }
   }
 
