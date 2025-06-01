@@ -92,6 +92,7 @@ class PoeNewsBot {
     };
 
     const payload = {
+      content: '@everyone New Path of Exile update!',
       embeds: [embed]
     };
 
