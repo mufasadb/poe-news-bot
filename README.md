@@ -102,3 +102,7 @@ docker run -d \
 5. Set up as a scheduled task or daemon
 
 The bot uses a 10-minute polling interval by default to be respectful to the RSS feed.
+
+## Docker Hub
+
+The bot is available on Docker Hub at: `mufasadb/poe-news-bot`
