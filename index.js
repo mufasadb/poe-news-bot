@@ -31,15 +31,19 @@ class PoeNewsBot {
 
   async init() {
     const isFirstRun = await this.loadPostedArticles();
-    console.log('Poe News Bot initialized');
+    console.log('🤖 Poe News Bot initialized');
+    console.log(`📁 Storage location: ${this.config.storage.filename}`);
+    console.log(`🔗 Discord webhook configured: ${this.config.discord.webhookUrl ? 'Yes' : 'No'}`);
+    console.log(`⏱️  Poll interval: ${this.config.rss.pollIntervalMinutes} minutes`);
     
     if (this.config.postLatestOnStart) {
-      console.log('POST_LATEST_ON_START enabled - posting latest article for testing...');
+      console.log('🧪 POST_LATEST_ON_START enabled - posting latest article for testing...');
       await this.postLatestArticle();
     } else if (isFirstRun) {
-      console.log('First run detected - posting latest article and marking older ones as seen...');
+      console.log('🆕 First run detected - marking all current articles as seen...');
       await this.initializeWithLatestPost();
     } else {
+      console.log('🔄 Checking for new posts...');
       await this.checkForNewPosts();
     }
     
@@ -48,7 +52,7 @@ class PoeNewsBot {
       this.checkForNewPosts();
     });
     
-    console.log(`Bot started. Checking for updates every ${this.config.rss.pollIntervalMinutes} minutes.`);
+    console.log(`✅ Bot started. Checking for updates every ${this.config.rss.pollIntervalMinutes} minutes.`);
   }
 
   async loadPostedArticles() {
@@ -68,9 +72,16 @@ class PoeNewsBot {
   async savePostedArticles() {
     try {
       const articles = Array.from(this.postedArticles);
+      console.log(`Saving ${articles.length} posted articles to ${this.config.storage.filename}`);
+      
+      // Ensure directory exists
+      const dir = require('path').dirname(this.config.storage.filename);
+      await fs.mkdir(dir, { recursive: true });
+      
       await fs.writeFile(this.config.storage.filename, JSON.stringify(articles, null, 2));
+      console.log(`✅ Successfully saved posted articles to ${this.config.storage.filename}`);
     } catch (error) {
-      console.error('Error saving posted articles:', error);
+      console.error('❌ Error saving posted articles:', error);
     }
   }
 
