@@ -1,0 +1,12 @@
+{
+  "discord": {
+    "webhookUrl": "YOUR_DISCORD_WEBHOOK_URL_HERE"
+  },
+  "rss": {
+    "url": "https://www.pathofexile.com/news/rss",
+    "pollIntervalMinutes": 10
+  },
+  "storage": {
+    "filename": "/app/data/posted_articles.json"
+  }
+}

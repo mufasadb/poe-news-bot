@@ -6,10 +6,24 @@ import { readFileSync } from 'fs';
 
 class PoeNewsBot {
   constructor() {
-    this.config = JSON.parse(readFileSync('./config.json', 'utf8'));
+    this.config = this.loadConfig();
     this.parser = new Parser();
     this.postedArticles = new Set();
     this.init();
+  }
+
+  loadConfig() {
+    const config = JSON.parse(readFileSync('./config.json', 'utf8'));
+    
+    if (process.env.DISCORD_WEBHOOK_URL) {
+      config.discord.webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+    }
+    
+    if (process.env.POLL_INTERVAL_MINUTES) {
+      config.rss.pollIntervalMinutes = parseInt(process.env.POLL_INTERVAL_MINUTES);
+    }
+    
+    return config;
   }
 
   async init() {

@@ -41,8 +41,51 @@ Edit `config.json` to customize:
 - ✅ Error handling and logging
 - ✅ Persists posted article history across restarts
 
+## Docker Usage
+
+### Using Docker Hub Image
+
+```bash
+# Create a data directory for persistent storage
+mkdir poe-bot-data
+
+# Run the container
+docker run -d \
+  --name poe-news-bot \
+  -v $(pwd)/poe-bot-data:/app/data \
+  -e DISCORD_WEBHOOK_URL="your_webhook_url_here" \
+  mufasadb/poe-news-bot
+```
+
+### Building Locally
+
+```bash
+# Build the image
+docker build -t poe-news-bot .
+
+# Run the container
+docker run -d \
+  --name poe-news-bot \
+  -v $(pwd)/data:/app/data \
+  -e DISCORD_WEBHOOK_URL="your_webhook_url_here" \
+  poe-news-bot
+```
+
+### Environment Variables
+
+- `DISCORD_WEBHOOK_URL`: Your Discord webhook URL (required)
+- `POLL_INTERVAL_MINUTES`: How often to check for updates (default: 10)
+
 ## Running on Unraid
 
+### Option 1: Docker (Recommended)
+1. Go to Docker tab in Unraid
+2. Add Container
+3. Use image: `mufasadb/poe-news-bot`
+4. Add environment variable `DISCORD_WEBHOOK_URL` with your webhook
+5. Map `/app/data` to `/mnt/user/appdata/poe-news-bot`
+
+### Option 2: Manual Installation
 1. Create a user script or use Community Applications
 2. Install Node.js if not available
 3. Clone/copy this bot to your preferred location
