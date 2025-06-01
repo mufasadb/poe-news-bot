@@ -54,7 +54,7 @@ docker run -d \
   --name poe-news-bot \
   -v $(pwd)/poe-bot-data:/app/data \
   -e DISCORD_WEBHOOK_URL="your_webhook_url_here" \
-  mufasadb/poe-news-bot
+  callmebeachy/poe-news-bot
 
 # For testing - posts latest article immediately
 docker run -d \
@@ -62,7 +62,7 @@ docker run -d \
   -v $(pwd)/poe-bot-data:/app/data \
   -e DISCORD_WEBHOOK_URL="your_webhook_url_here" \
   -e POST_LATEST_ON_START="true" \
-  mufasadb/poe-news-bot
+  callmebeachy/poe-news-bot
 ```
 
 ### Building Locally
@@ -90,7 +90,7 @@ docker run -d \
 ### Option 1: Docker (Recommended)
 1. Go to Docker tab in Unraid
 2. Add Container
-3. Use image: `mufasadb/poe-news-bot`
+3. Use image: `callmebeachy/poe-news-bot`
 4. Add environment variable `DISCORD_WEBHOOK_URL` with your webhook
 5. Map `/app/data` to `/mnt/user/appdata/poe-news-bot`
 
@@ -105,4 +105,4 @@ The bot uses a 10-minute polling interval by default to be respectful to the RSS
 
 ## Docker Hub
 
-The bot is available on Docker Hub at: `mufasadb/poe-news-bot`
+The bot is available on Docker Hub at: `callmebeachy/poe-news-bot`

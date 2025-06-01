@@ -26,7 +26,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: mufasadb/poe-news-bot
+        images: ${{ secrets.DOCKERHUB_USERNAME }}/poe-news-bot
         tags: |
           type=ref,event=branch
           type=ref,event=pr
