@@ -8,5 +8,6 @@
   },
   "storage": {
     "filename": "/app/data/posted_articles.json"
-  }
+  },
+  "postLatestOnStart": false
 }

@@ -23,6 +23,8 @@ class PoeNewsBot {
       config.rss.pollIntervalMinutes = parseInt(process.env.POLL_INTERVAL_MINUTES);
     }
     
+    config.postLatestOnStart = process.env.POST_LATEST_ON_START === 'true';
+    
     return config;
   }
 
@@ -30,7 +32,12 @@ class PoeNewsBot {
     await this.loadPostedArticles();
     console.log('Poe News Bot initialized');
     
-    await this.checkForNewPosts();
+    if (this.config.postLatestOnStart) {
+      console.log('POST_LATEST_ON_START enabled - posting latest article for testing...');
+      await this.postLatestArticle();
+    } else {
+      await this.checkForNewPosts();
+    }
     
     const cronPattern = `*/${this.config.rss.pollIntervalMinutes} * * * *`;
     cron.schedule(cronPattern, () => {
@@ -107,6 +114,52 @@ class PoeNewsBot {
     } catch (error) {
       console.error('Error posting to Discord:', error);
       return false;
+    }
+  }
+
+  async postLatestArticle() {
+    console.log('Fetching latest article for testing...');
+    
+    const articles = await this.fetchRssFeed();
+    if (articles.length === 0) {
+      console.log('No articles found in RSS feed');
+      return;
+    }
+
+    const latestArticle = articles[0];
+    console.log(`Posting latest article: ${latestArticle.title}`);
+    
+    const embed = {
+      title: `🧪 TEST: ${latestArticle.title}`,
+      url: latestArticle.link,
+      description: (latestArticle.contentSnippet?.substring(0, 250) || 'No description available') + '...\n\n**This is a test post to verify the bot is working correctly.**',
+      color: 0xFF6B35,
+      timestamp: latestArticle.isoDate,
+      footer: {
+        text: 'Path of Exile News • Test Mode'
+      }
+    };
+
+    const payload = {
+      embeds: [embed]
+    };
+
+    try {
+      const response = await fetch(this.config.discord.webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        console.log('✅ Test post successful! Bot is working correctly.');
+      } else {
+        console.error('❌ Test post failed:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('❌ Error posting test message:', error);
     }
   }
 

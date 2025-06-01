@@ -55,6 +55,14 @@ docker run -d \
   -v $(pwd)/poe-bot-data:/app/data \
   -e DISCORD_WEBHOOK_URL="your_webhook_url_here" \
   mufasadb/poe-news-bot
+
+# For testing - posts latest article immediately
+docker run -d \
+  --name poe-news-bot \
+  -v $(pwd)/poe-bot-data:/app/data \
+  -e DISCORD_WEBHOOK_URL="your_webhook_url_here" \
+  -e POST_LATEST_ON_START="true" \
+  mufasadb/poe-news-bot
 ```
 
 ### Building Locally
@@ -75,6 +83,7 @@ docker run -d \
 
 - `DISCORD_WEBHOOK_URL`: Your Discord webhook URL (required)
 - `POLL_INTERVAL_MINUTES`: How often to check for updates (default: 10)
+- `POST_LATEST_ON_START`: Set to `true` to post the latest article on startup for testing (default: false)
 
 ## Running on Unraid
 
