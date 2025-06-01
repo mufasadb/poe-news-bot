@@ -9,6 +9,7 @@ class PoeNewsBot {
     this.config = this.loadConfig();
     this.parser = new Parser();
     this.postedArticles = new Set();
+    this.rateLimitQueue = [];
     this.init();
   }
 
@@ -84,7 +85,27 @@ class PoeNewsBot {
     }
   }
 
+  async checkRateLimit() {
+    const now = Date.now();
+    const oneMinuteAgo = now - 60000;
+    
+    // Remove posts older than 1 minute
+    this.rateLimitQueue = this.rateLimitQueue.filter(time => time > oneMinuteAgo);
+    
+    if (this.rateLimitQueue.length >= 3) {
+      console.log('⚠️ Rate limit reached (3 posts per minute). Skipping post to prevent spam.');
+      return false;
+    }
+    
+    return true;
+  }
+
   async postToDiscord(article) {
+    // Check rate limit first
+    if (!await this.checkRateLimit()) {
+      return false;
+    }
+
     const embed = {
       title: article.title,
       url: article.link,
@@ -111,6 +132,8 @@ class PoeNewsBot {
       });
 
       if (response.ok) {
+        // Record this post time for rate limiting
+        this.rateLimitQueue.push(Date.now());
         console.log(`Posted article: ${article.title}`);
         return true;
       } else {
@@ -133,20 +156,15 @@ class PoeNewsBot {
     }
 
     const latestArticle = articles[0];
-    console.log(`Posting latest article: ${latestArticle.title}`);
+    console.log(`First run: Found latest article "${latestArticle.title}"`);
     
-    // Post the latest article
-    const success = await this.postToDiscord(latestArticle);
-    
-    if (success) {
-      // Mark ALL articles as seen to prevent spam
-      for (const article of articles) {
-        this.postedArticles.add(article.link);
-      }
-      
-      await this.savePostedArticles();
-      console.log(`✅ First run complete! Posted latest article and marked ${articles.length} articles as seen.`);
+    // Mark ALL articles as seen WITHOUT posting them
+    for (const article of articles) {
+      this.postedArticles.add(article.link);
     }
+    
+    await this.savePostedArticles();
+    console.log(`✅ First run complete! Marked ${articles.length} articles as seen. Bot will only post NEW articles from now on.`);
   }
 
   async postLatestArticle() {
