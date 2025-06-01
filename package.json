@@ -1,0 +1,20 @@
+{
+  "name": "poe-news-bot",
+  "version": "1.0.0",
+  "description": "A bot that monitors Path of Exile RSS feed and posts updates to Discord",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "check-config": "node index.js --check-config"
+  },
+  "dependencies": {
+    "rss-parser": "^3.13.0",
+    "node-cron": "^3.0.3",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
