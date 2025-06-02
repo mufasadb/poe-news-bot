@@ -56,12 +56,13 @@ docker run -d \
   -e DISCORD_WEBHOOK_URL="your_webhook_url_here" \
   callmebeachy/poe-news-bot
 
-# For testing - posts latest article immediately
+# For testing - posts latest article immediately without @everyone
 docker run -d \
   --name poe-news-bot \
   -v $(pwd)/poe-bot-data:/app/data \
   -e DISCORD_WEBHOOK_URL="your_webhook_url_here" \
   -e POST_LATEST_ON_START="true" \
+  -e PING_EVERYONE="false" \
   callmebeachy/poe-news-bot
 ```
 
@@ -84,6 +85,7 @@ docker run -d \
 - `DISCORD_WEBHOOK_URL`: Your Discord webhook URL (required)
 - `POLL_INTERVAL_MINUTES`: How often to check for updates (default: 10)
 - `POST_LATEST_ON_START`: Set to `true` to post the latest article on startup for testing (default: false)
+- `PING_EVERYONE`: Set to `false` to disable @everyone mentions during testing (default: true)
 
 ## Running on Unraid
 

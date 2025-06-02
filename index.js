@@ -26,6 +26,7 @@ class PoeNewsBot {
     }
     
     config.postLatestOnStart = process.env.POST_LATEST_ON_START === 'true';
+    config.pingEveryone = process.env.PING_EVERYONE !== 'false'; // Default true, set to 'false' to disable
     
     return config;
   }
@@ -36,6 +37,7 @@ class PoeNewsBot {
     console.log(`📁 Storage location: ${this.config.storage.filename}`);
     console.log(`🔗 Discord webhook configured: ${this.config.discord.webhookUrl ? 'Yes' : 'No'}`);
     console.log(`⏱️  Poll interval: ${this.config.rss.pollIntervalMinutes} minutes`);
+    console.log(`🔔 @everyone pings: ${this.config.pingEveryone ? 'Enabled' : 'Disabled'}`);
     
     if (this.config.postLatestOnStart) {
       console.log('🧪 POST_LATEST_ON_START enabled - posting latest article for testing...');
@@ -130,7 +132,7 @@ class PoeNewsBot {
     };
 
     const payload = {
-      content: '@everyone New Path of Exile update!',
+      content: this.config.pingEveryone ? '@everyone New Path of Exile update!' : 'New Path of Exile update!',
       embeds: [embed]
     };
 
