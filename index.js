@@ -43,7 +43,7 @@ class PoeNewsBot {
       console.log('🧪 POST_LATEST_ON_START enabled - posting latest article for testing...');
       await this.postLatestArticle();
     } else if (isFirstRun) {
-      console.log('🆕 First run detected - marking all current articles as seen...');
+      console.log('🆕 First run detected - posting latest article and marking others as seen...');
       await this.initializeWithLatestPost();
     } else {
       console.log('🔄 Checking for new posts...');
@@ -170,15 +170,22 @@ class PoeNewsBot {
     }
 
     const latestArticle = articles[0];
-    console.log(`First run: Found latest article "${latestArticle.title}"`);
+    console.log(`First run: Posting latest article "${latestArticle.title}"`);
     
-    // Mark ALL articles as seen WITHOUT posting them
-    for (const article of articles) {
-      this.postedArticles.add(article.link);
+    // Post the latest article
+    const success = await this.postToDiscord(latestArticle);
+    
+    if (success) {
+      // Mark ALL articles as seen (including the one we just posted)
+      for (const article of articles) {
+        this.postedArticles.add(article.link);
+      }
+      
+      await this.savePostedArticles();
+      console.log(`✅ First run complete! Posted latest article and marked ${articles.length} articles as seen.`);
+    } else {
+      console.log('❌ Failed to post latest article, will retry on next check');
     }
-    
-    await this.savePostedArticles();
-    console.log(`✅ First run complete! Marked ${articles.length} articles as seen. Bot will only post NEW articles from now on.`);
   }
 
   async postLatestArticle() {
