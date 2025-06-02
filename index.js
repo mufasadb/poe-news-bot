@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 import cron from 'node-cron';
 import fs from 'fs/promises';
 import { readFileSync } from 'fs';
+import { dirname } from 'path';
 
 class PoeNewsBot {
   constructor() {
@@ -75,7 +76,7 @@ class PoeNewsBot {
       console.log(`Saving ${articles.length} posted articles to ${this.config.storage.filename}`);
       
       // Ensure directory exists
-      const dir = require('path').dirname(this.config.storage.filename);
+      const dir = dirname(this.config.storage.filename);
       await fs.mkdir(dir, { recursive: true });
       
       await fs.writeFile(this.config.storage.filename, JSON.stringify(articles, null, 2));
